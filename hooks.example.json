@@ -1,0 +1,7 @@
+{
+  "hooks": {
+    "Stop": [{ "hooks": [{ "type": "command", "command": "node X:/code/personal/codex-mx4-haptics/notify.mjs", "timeout": 5 }] }],
+    "PermissionRequest": [{ "hooks": [{ "type": "command", "command": "node X:/code/personal/codex-mx4-haptics/notify.mjs", "timeout": 5 }] }],
+    "PreToolUse": [{ "matcher": "(^|[.:/])request_user_input(_async)?$", "hooks": [{ "type": "command", "command": "node X:/code/personal/codex-mx4-haptics/notify.mjs", "timeout": 5 }] }]
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "codex-mx4-haptics",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Haptic notifications for Codex using Logitech MX Master 4",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "test": "node --test notify.test.mjs",
+    "haptic:test": "node notify.mjs --test",
+    "haptic:attention": "node notify.mjs --test attention"
+  }
+}
