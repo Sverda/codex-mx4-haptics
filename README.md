@@ -20,7 +20,7 @@ Projekt nie ma zależności npm. Używa wbudowanego WebSocket oraz lokalnego end
 | `request_user_input` lub `request_user_input_async` przez `PreToolUse` | Dwa efekty `knock` | Róg Boromira, skrócony do 3 s |
 | Inne narzędzia i przerwanie pracy | Brak | Cisza |
 
-Zakończeniu towarzyszy `sounds/completion.wav`, przygotowany z `ulevelu_gondor1.wav` z Battle for Middle-earth. Prośbie o uwagę towarzyszy `sounds/attention.wav`, przygotowany z `guborom_horn1.wav`. Oba efekty trwają dokładnie 3 sekundy, z wyciszeniem ostatnich 50 ms. Poziom sygnału w obu plikach jest obniżony do 50% oryginału (około −6 dB); głośność systemu i innych aplikacji pozostaje bez zmian. Dźwięk i haptyka uruchamiają się niezależnie. Ukryty odtwarzacz działa w tle, więc hook nie czeka na zakończenie dźwięku. Błędy odtwarzacza zapisują się jako `audio-failed` w diagnostyce; uruchomienie procesu nie potwierdza słyszalności.
+Zakończeniu towarzyszy `sounds/completion.wav`, przygotowany z `ulevelu_gondor1.wav` z Battle for Middle-earth. Prośbie o uwagę towarzyszy `sounds/attention.wav`, przygotowany z `guborom_horn1.wav`. Oba efekty trwają dokładnie 3 sekundy, z wyciszeniem ostatnich 50 ms. Poziom sygnału w obu plikach jest obniżony do 25% oryginału (około −12 dB); głośność systemu i innych aplikacji pozostaje bez zmian. Dźwięk i haptyka uruchamiają się niezależnie. Ukryty odtwarzacz działa w tle, więc hook nie czeka na zakończenie dźwięku. Błędy odtwarzacza zapisują się jako `audio-failed` w diagnostyce; uruchomienie procesu nie potwierdza słyszalności.
 
 Pliki WAV są lokalne i wyłączone z Git. Źródło oraz sposób przygotowania: [sounds/README.md](sounds/README.md).
 
