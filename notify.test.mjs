@@ -1,6 +1,22 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { effect, vibrate } from './notify.mjs';
+import { effect, vibrate, notify } from './notify.mjs';
+
+test('audio still runs when the haptic plugin is unavailable', async () => {
+  let played = false;
+  await assert.rejects(notify([2, 2],
+    async () => { throw new Error('offline'); },
+    async () => { played = true; }), /offline/);
+  assert.equal(played, true);
+});
+
+test('audio failure does not prevent haptics', async () => {
+  let vibrated = false;
+  await assert.rejects(notify([11, 2],
+    async () => { vibrated = true; },
+    async () => { throw new Error('audio unavailable'); }), /audio unavailable/);
+  assert.equal(vibrated, true);
+});
 
 test('completion, attention, unrelated tools and continuation', () => {
   assert.deepEqual(effect({type:'agent-turn-complete'}), [11,2]);

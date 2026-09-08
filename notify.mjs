@@ -1,5 +1,27 @@
-import { pathToFileURL } from 'node:url';
+import { pathToFileURL, fileURLToPath } from 'node:url';
 import { appendFileSync } from 'node:fs';
+import { spawn } from 'node:child_process';
+
+export function playSound(pattern) {
+  if (!pattern.length) return Promise.resolve();
+  const name = pattern[0] === 11 ? 'ulevelu_gondor1.wav' : 'attention.wav';
+  return new Promise((resolve, reject) => {
+    const child = spawn('powershell.exe', [
+      '-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass',
+      '-File', fileURLToPath(new URL('./play-sound.ps1', import.meta.url)),
+      '-SoundPath', fileURLToPath(new URL(`./sounds/${name}`, import.meta.url)),
+    ], { detached: true, windowsHide: true, stdio: 'ignore' });
+    child.once('error', reject);
+    child.once('spawn', () => { child.unref(); resolve(); });
+  });
+}
+
+export async function notify(pattern, haptic = vibrate, audio = playSound) {
+  const results = await Promise.allSettled([haptic(pattern), audio(pattern)]);
+  const failures = results.filter(result => result.status === 'rejected');
+  if (failures.length) throw new AggregateError(failures.map(result => result.reason),
+    failures.map(result => result.reason.message).join('; '));
+}
 
 function diagnostic(status, fields = {}) {
   try {
@@ -63,9 +85,9 @@ async function main() {
     }
     const pattern = effect(event);
     diagnostic('received', { event: event.hook_event_name ?? event.type, pattern });
-    await vibrate(pattern);
+    await notify(pattern);
     diagnostic(pattern.length ? 'sent' : 'ignored');
-    if (test) console.log('Pattern sent to the plugin; confirm the physical vibration.');
+    if (test) console.log('Haptic pattern sent and audio player launched; confirm vibration and sound.');
   } catch (error) {
     diagnostic('failed', { error: error.message });
     console.error(error.message);

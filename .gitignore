@@ -2,3 +2,4 @@ diagnostics.jsonl
 hooks.json
 node_modules/
 *.log
+sounds/*.wav

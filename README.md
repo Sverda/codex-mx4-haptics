@@ -1,6 +1,6 @@
 # Codex MX4 Haptics
 
-Powiadomienia haptyczne o zakończeniu odpowiedzi i prośbach o uwagę w Codex, odtwarzane na Logitech MX Master 4 przez Haptic Web Plugin.
+Powiadomienia haptyczne i dźwiękowe o zakończeniu odpowiedzi i prośbach o uwagę w Codex. Haptyka korzysta z Logitech MX Master 4 przez Haptic Web Plugin, a dźwięki z odtwarzacza WAV w Windows PowerShell.
 
 ## Wymagania
 
@@ -18,6 +18,10 @@ Projekt nie ma zależności npm. Używa wbudowanego WebSocket oraz lokalnego end
 | Prośba o uprawnienia (`PermissionRequest`) | Dwa efekty `knock` |
 | `request_user_input` lub `request_user_input_async` przez `PreToolUse` | Dwa efekty `knock` |
 | Inne narzędzia i przerwanie pracy | Cisza |
+
+Zakończeniu towarzyszy `sounds/ulevelu_gondor1.wav` z Battle for Middle-earth (pełne 7,28 s). Prośbie o uwagę towarzyszy `sounds/attention.wav`: pierwsze 3 sekundy `guborom_horn1.wav`, z wyciszeniem ostatnich 50 ms. Dźwięk i haptyka uruchamiają się niezależnie. Ukryty odtwarzacz działa w tle, więc hook nie czeka na zakończenie dźwięku. Błędy odtwarzacza zapisują się jako `audio-failed` w diagnostyce; uruchomienie procesu nie potwierdza słyszalności.
+
+Pliki WAV są lokalne i wyłączone z Git. Źródło oraz sposób przygotowania: [sounds/README.md](sounds/README.md).
 
 `Stop` oznacza próbę zakończenia odpowiedzi, nie potwierdzenie realizacji całego zadania. Inny hook może jeszcze wymusić kontynuację. Pytania w tekście odpowiedzi otrzymują sygnał zakończenia. Nie każda ścieżka narzędzia emituje `PreToolUse`.
 
