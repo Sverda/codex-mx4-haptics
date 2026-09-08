@@ -4,15 +4,21 @@ import { spawn } from 'node:child_process';
 
 export function playSound(pattern) {
   if (!pattern.length) return Promise.resolve();
-  const name = pattern[0] === 11 ? 'ulevelu_gondor1.wav' : 'attention.wav';
+  const name = pattern[0] === 11 ? 'completion.wav' : 'attention.wav';
   return new Promise((resolve, reject) => {
     const child = spawn('powershell.exe', [
       '-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass',
       '-File', fileURLToPath(new URL('./play-sound.ps1', import.meta.url)),
       '-SoundPath', fileURLToPath(new URL(`./sounds/${name}`, import.meta.url)),
-    ], { detached: true, windowsHide: true, stdio: 'ignore' });
+      '-Background',
+    // Let PowerShell launch the background player; detached Node children fail
+    // to execute PowerShell here, and ordinary children die when Node exits.
+    ], { windowsHide: true, stdio: 'ignore' });
     child.once('error', reject);
-    child.once('spawn', () => { child.unref(); resolve(); });
+    child.once('exit', code => {
+      if (code === 0) resolve();
+      else reject(new Error(`Audio launcher exited with code ${code}`));
+    });
   });
 }
 

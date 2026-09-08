@@ -4,13 +4,14 @@
 
 Pliki WAV są wyłączone z Git i nie są objęte licencją kodu projektu. Nowa instalacja wymaga przygotowania lokalnych plików z paczki źródłowej:
 
-- `Sound Effects/ulevelu_gondor1.wav` → `sounds/ulevelu_gondor1.wav`, bez zmian (7,280975 s).
+- `Sound Effects/ulevelu_gondor1.wav` → `sounds/ulevelu_gondor1.wav`, źródło do przycięcia (7,280975 s).
 - `Sound Effects/guborom_horn1.wav` → `sounds/guborom_horn1.wav`, źródło do przycięcia.
 
-Przygotowanie efektu uwagi z katalogu projektu (FFmpeg jest potrzebny tylko do przygotowania):
+Przygotowanie obu efektów z katalogu projektu (FFmpeg jest potrzebny tylko do przygotowania):
 
 ```powershell
-ffmpeg -i sounds/guborom_horn1.wav -t 3 -af "afade=t=out:st=2.95:d=0.05" -c:a pcm_s16le sounds/attention.wav
+ffmpeg -i sounds/guborom_horn1.wav -t 3 -af "volume=0.5,afade=t=out:st=2.95:d=0.05" -c:a pcm_s16le sounds/attention.wav
+ffmpeg -i sounds/ulevelu_gondor1.wav -t 3 -af "volume=0.5,afade=t=out:st=2.95:d=0.05" -c:a pcm_s16le sounds/completion.wav
 ```
 
-Wynik: dokładnie 3 sekundy, z wyciszeniem ostatnich 50 ms. Odtwarzanie wymaga tylko Windows PowerShell i plików WAV.
+Wynik: każdy efekt ma dokładnie 3 sekundy, z wyciszeniem ostatnich 50 ms i poziomem sygnału 50% oryginału (około −6 dB). Głośność pozostałych aplikacji nie jest zmieniana. Efekty należy generować z oryginalnych plików, aby nie nakładać kolejnych redukcji głośności. Odtwarzacz korzysta z `attention.wav` i `completion.wav`. Odtwarzanie wymaga tylko Windows PowerShell i plików WAV.

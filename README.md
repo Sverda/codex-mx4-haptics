@@ -15,12 +15,12 @@ Projekt nie ma zależności npm. Używa wbudowanego WebSocket oraz lokalnego end
 
 | Zdarzenie | Haptyka | Dźwięk z Battle for Middle-earth |
 | --- | --- | --- |
-| Zakończenie odpowiedzi (`Stop`) | `happy_alert`, po 650 ms akcent `knock` | Efekt Gondoru (`ulevelu_gondor1.wav`), pełne 7,28 s |
+| Zakończenie odpowiedzi (`Stop`) | `happy_alert`, po 650 ms akcent `knock` | Efekt Gondoru, skrócony do 3 s |
 | Prośba o uprawnienia (`PermissionRequest`) | Dwa efekty `knock` | Róg Boromira, skrócony do 3 s |
 | `request_user_input` lub `request_user_input_async` przez `PreToolUse` | Dwa efekty `knock` | Róg Boromira, skrócony do 3 s |
 | Inne narzędzia i przerwanie pracy | Brak | Cisza |
 
-Zakończeniu towarzyszy `sounds/ulevelu_gondor1.wav` z Battle for Middle-earth (pełne 7,28 s). Prośbie o uwagę towarzyszy `sounds/attention.wav`: pierwsze 3 sekundy `guborom_horn1.wav`, z wyciszeniem ostatnich 50 ms. Dźwięk i haptyka uruchamiają się niezależnie. Ukryty odtwarzacz działa w tle, więc hook nie czeka na zakończenie dźwięku. Błędy odtwarzacza zapisują się jako `audio-failed` w diagnostyce; uruchomienie procesu nie potwierdza słyszalności.
+Zakończeniu towarzyszy `sounds/completion.wav`, przygotowany z `ulevelu_gondor1.wav` z Battle for Middle-earth. Prośbie o uwagę towarzyszy `sounds/attention.wav`, przygotowany z `guborom_horn1.wav`. Oba efekty trwają dokładnie 3 sekundy, z wyciszeniem ostatnich 50 ms. Poziom sygnału w obu plikach jest obniżony do 50% oryginału (około −6 dB); głośność systemu i innych aplikacji pozostaje bez zmian. Dźwięk i haptyka uruchamiają się niezależnie. Ukryty odtwarzacz działa w tle, więc hook nie czeka na zakończenie dźwięku. Błędy odtwarzacza zapisują się jako `audio-failed` w diagnostyce; uruchomienie procesu nie potwierdza słyszalności.
 
 Pliki WAV są lokalne i wyłączone z Git. Źródło oraz sposób przygotowania: [sounds/README.md](sounds/README.md).
 
@@ -40,7 +40,7 @@ Komunikat testowy potwierdza przesłanie bajtów przez WebSocket i uruchomienie 
 
 ## Instalacja
 
-1. Przygotuj `sounds/attention.wav` i `sounds/ulevelu_gondor1.wav` według [instrukcji dźwięków](sounds/README.md). Plików WAV nie ma w repozytorium Git; FFmpeg jest potrzebny tylko do przycięcia rogu.
+1. Przygotuj `sounds/attention.wav` i `sounds/completion.wav` według [instrukcji dźwięków](sounds/README.md). Plików WAV nie ma w repozytorium Git; FFmpeg jest potrzebny tylko do przygotowania dźwięków.
 2. Uruchom oba testy ręczne z sekcji powyżej i sprawdź wibrację oraz dźwięk.
 3. Dostosuj ścieżki w `hooks.example.json` do lokalizacji repozytorium i Node.js. Przykład zakłada `X:/code/personal/codex-mx4-haptics` i `node` w PATH.
 4. Dodaj wpisy do `hooks.json` w `CODEX_HOME` (domyślnie `%USERPROFILE%\.codex`), zachowując istniejące hooki.
@@ -54,7 +54,7 @@ Lokalny `hooks.json` z pełnymi ścieżkami i `diagnostics.jsonl` są wyłączon
 ## Stan weryfikacji
 
 - Cztery testy automatyczne przeszły 2026-09-08: sprawdzają wybór efektów, wysyłanie binarnych identyfikatorów przez WebSocket oraz niezależne uruchamianie audio i haptyki przy awarii jednego z kanałów.
-- 2026-09-08 potwierdzono długość przyciętego rogu: dokładnie 3 s. Oba pliki przeszły próbę odtwarzania przez Windows PowerShell bez błędów; słyszalność i automatyczne odtwarzanie przez hook wymagają potwierdzenia użytkownika.
+- 2026-09-08 potwierdzono długość obu przyciętych efektów: dokładnie 3 s. Po zgłoszeniu braku dźwięku naprawiono uruchamianie PowerShella w tle: odtwarzacz jest tworzony przez `Start-Process -WindowStyle Hidden`, a skrypt Node czeka tylko na zakończenie programu uruchamiającego. Test przez `notify.mjs --test` potwierdził pełne odtwarzanie efektu zakończenia po wyjściu Node. Diagnostyka rejestruje `audio-started`, `audio-loaded` i `audio-completed`; ostatni wpis oznacza powrót z `PlaySync`, nie potwierdzenie słyszalności. Dźwięk na zakończenie odpowiedzi w aplikacji wymaga jeszcze potwierdzenia użytkownika.
 - 2026-09-08 potwierdzono automatyczne wywołanie `Stop` w świeżym `codex exec --ephemeral` i fizyczną wibrację.
 - Użytkownik przetestował i zaakceptował obecny sygnał `happy_alert` + `knock`.
 - Automatyczne powiadomienia w aplikacji desktopowej oraz sygnały prośby o uwagę nadal wymagają osobnej weryfikacji. Wcześniejsze nieudane próby interaktywne nie zostawiły wpisu wywołania skryptu; przyczyna różnicy względem `codex exec` nie została jednoznacznie ustalona.
