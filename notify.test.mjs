@@ -22,7 +22,7 @@ test('completion, attention, unrelated tools and continuation', () => {
   assert.deepEqual(effect({type:'agent-turn-complete'}), [11,2]);
   assert.deepEqual(effect({hook_event_name:'Stop'}), [11,2]);
   assert.deepEqual(effect({hook_event_name:'Stop',stop_hook_active:true}), []);
-  assert.deepEqual(effect({hook_event_name:'PermissionRequest'}), [2,2]);
+  assert.deepEqual(effect({hook_event_name:'PermissionRequest'}), []);
   for (const tool_name of ['request_user_input','functions.request_user_input_async'])
     assert.deepEqual(effect({hook_event_name:'PreToolUse',tool_name}), [2,2]);
   assert.deepEqual(effect({hook_event_name:'PreToolUse',tool_name:'exec_command'}), []);

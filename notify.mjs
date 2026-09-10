@@ -10,9 +10,7 @@ export function playSound(pattern) {
       '-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass',
       '-File', fileURLToPath(new URL('./play-sound.ps1', import.meta.url)),
       '-SoundPath', fileURLToPath(new URL(`./sounds/${name}`, import.meta.url)),
-      '-Background',
-    // Let PowerShell launch the background player; detached Node children fail
-    // to execute PowerShell here, and ordinary children die when Node exits.
+    // Keep the player alive until the three-second sound completes.
     ], { windowsHide: true, stdio: 'ignore' });
     child.once('error', reject);
     child.once('exit', code => {
@@ -40,7 +38,7 @@ export function effect(event) {
   // happy_alert followed by a distinct knock accent.
   if (event?.type === 'agent-turn-complete') return [11, 2];
   if (event?.hook_event_name === 'Stop') return event.stop_hook_active ? [] : [11, 2];
-  if (event?.hook_event_name === 'PermissionRequest') return [2, 2];
+  if (event?.hook_event_name === 'PermissionRequest') return [];
   if (event?.hook_event_name === 'PreToolUse' &&
       /(^|[.:/])request_user_input(_async)?$/.test(event.tool_name ?? '')) return [2, 2];
   return [];
@@ -80,7 +78,9 @@ async function main() {
   const deadline = setTimeout(() => process.exit(test ? 1 : 0), 4000);
   try {
     let event;
-    if (test) event = { hook_event_name: process.argv[3] === 'attention' ? 'PermissionRequest' : 'Stop' };
+    if (test) event = process.argv[3] === 'attention'
+      ? { hook_event_name: 'PreToolUse', tool_name: 'request_user_input' }
+      : { hook_event_name: 'Stop' };
     else {
       let input = process.argv[2] ?? '';
       if (!input) for await (const chunk of process.stdin) {
@@ -93,7 +93,7 @@ async function main() {
     diagnostic('received', { event: event.hook_event_name ?? event.type, pattern });
     await notify(pattern);
     diagnostic(pattern.length ? 'sent' : 'ignored');
-    if (test) console.log('Haptic pattern sent and audio player launched; confirm vibration and sound.');
+    if (test) console.log('Haptic pattern sent and audio playback completed; confirm vibration and sound.');
   } catch (error) {
     diagnostic('failed', { error: error.message });
     console.error(error.message);
